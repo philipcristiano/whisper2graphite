@@ -6,7 +6,7 @@ Replay your whisper files into graphite
 
 Not really released since I haven't actually imported anything into Graphite yet.
 
-`git://github.com/philipcristiano/whisper2graphite.git && cd whisper2graphite && python setup.py install`
+`git clone git://github.com/philipcristiano/whisper2graphite.git && cd whisper2graphite && python setup.py install`
 
 ## Running
 
