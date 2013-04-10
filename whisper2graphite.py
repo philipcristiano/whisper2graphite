@@ -17,10 +17,9 @@ def run():
 
                 time_info, values = whisper.fetch(path, 0)
                 metrics = zip(range(*time_info), values)
-                for time, value in metrics[:1000000]:
+                for time, value in metrics:
                     if value is not None:
                         line = '{} {} {}\n'.format(metric_path, value, time)
-                        print line,
                         sock.sendall(line)
     sock.close()
 
