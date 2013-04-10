@@ -6,7 +6,7 @@ import whisper
 
 def run():
     info = get_info()
-    sock = _socket_for_host_port
+    sock = _socket_for_host_port(info.graphite_host, info.graphite_port)
     for dirpath, dirnames, filenames in os.walk(info.whisper_path):
         print dirpath, dirnames, filenames
         for filename in filenames:
