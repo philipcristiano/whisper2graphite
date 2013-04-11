@@ -7,21 +7,28 @@ import whisper
 def run():
     info = get_info()
     sock = _socket_for_host_port(info.graphite_host, info.graphite_port)
-    for dirpath, dirnames, filenames in os.walk(info.whisper_path):
-        print dirpath, dirnames, filenames
-        for filename in filenames:
-            if filename.endswith('.wsp'):
-                path = os.path.join(dirpath, filename)
-                print path
-                metric_path = path.replace('/', '.')[:-4]
+    for path in paths_in_directory(info.whisper_path):
+        if path.endswith('.wsp'):
+            print path
+            metric_path = path.replace('/', '.')[:-4]
 
+            try:
                 time_info, values = whisper.fetch(path, 0)
-                metrics = zip(range(*time_info), values)
-                for time, value in metrics:
-                    if value is not None:
-                        line = '{} {} {}\n'.format(metric_path, value, time)
-                        sock.sendall(line)
+            except whisper.CorruptWhisperFile:
+                print 'Corrupt, skipping'
+                continue
+            metrics = zip(range(*time_info), values)
+            for time, value in metrics:
+                if value is not None:
+                    line = '{} {} {}\n'.format(metric_path, value, time)
+                    sock.sendall(line)
     sock.close()
+
+def paths_in_directory(directory):
+    for dirpath, dirnames, filenames in os.walk(directory):
+        for filename in filenames:
+            path = os.path.join(dirpath, filename)
+            yield path
 
 
 def _socket_for_host_port(host, port):
