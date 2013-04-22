@@ -10,12 +10,11 @@ def run():
     prefix = info.graphite_prefix
     if prefix and not prefix.endswith('.'):
         prefix += '.'
-    for path in paths_in_directory(info.whisper_path):
-        if path.endswith('.wsp'):
-            print path
-            metric_path = path.replace('/', '.')[:-4]
+    for relative_path, full_path in paths_in_directory(info.whisper_path):
+        if full_path.endswith('.wsp'):
+            metric_path = relative_path.replace('/', '.')[:-4]
             try:
-                time_info, values = whisper.fetch(path, 0)
+                time_info, values = whisper.fetch(full_path, 0)
             except whisper.CorruptWhisperFile:
                 print 'Corrupt, skipping'
                 continue
@@ -23,14 +22,15 @@ def run():
             for time, value in metrics:
                 if value is not None:
                     line = '{}{} {} {}\n'.format(prefix, metric_path, value, time)
-                    sock.sendall(line)
+                    print line
+                    #sock.sendall(line)
     sock.close()
 
 def paths_in_directory(directory):
     for dirpath, dirnames, filenames in os.walk(directory):
         for filename in filenames:
             path = os.path.join(dirpath, filename)
-            yield path
+            yield path[len(directory):], path
 
 
 def _socket_for_host_port(host, port):
