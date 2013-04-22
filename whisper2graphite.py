@@ -7,11 +7,13 @@ import whisper
 def run():
     info = get_info()
     sock = _socket_for_host_port(info.graphite_host, info.graphite_port)
+    prefix = info.graphite_prefix
+    if prefix and not prefix.endswith('.'):
+        prefix += '.'
     for path in paths_in_directory(info.whisper_path):
         if path.endswith('.wsp'):
             print path
             metric_path = path.replace('/', '.')[:-4]
-
             try:
                 time_info, values = whisper.fetch(path, 0)
             except whisper.CorruptWhisperFile:
@@ -20,7 +22,7 @@ def run():
             metrics = zip(range(*time_info), values)
             for time, value in metrics:
                 if value is not None:
-                    line = '{} {} {}\n'.format(metric_path, value, time)
+                    line = '{}{} {} {}\n'.format(prefix, metric_path, value, time)
                     sock.sendall(line)
     sock.close()
 
@@ -43,7 +45,7 @@ def get_info():
     parser.add_argument('--graphite-host', metavar='graphite-host', type=str, default=None, help='Host to send metrics to')
     parser.add_argument('--graphite-port', metavar='graphite-port', type=int, default=2003, help='Graphite port to send metrics to')
     parser.add_argument('--graphite-prefix', metavar='graphite-prefix', type=str, default='', help='Prefix for metrics')
-    parser.add_argument('--whisper-path', metavar='whisper-path', type=str, default='', help='Prefix for metrics')
+    parser.add_argument('--whisper-path', metavar='whisper-path', type=str, default='', help='Prefix for metrics folder')
     return parser.parse_args()
 
 
