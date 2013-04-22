@@ -23,7 +23,7 @@ def run():
                 if value is not None:
                     line = '{}{} {} {}\n'.format(prefix, metric_path, value, time)
                     print line
-                    #sock.sendall(line)
+                    sock.sendall(line)
     sock.close()
 
 def paths_in_directory(directory):
