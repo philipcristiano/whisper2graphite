@@ -22,7 +22,6 @@ def run():
             for time, value in metrics:
                 if value is not None:
                     line = '{}{} {} {}\n'.format(prefix, metric_path, value, time)
-                    print line
                     sock.sendall(line)
     sock.close()
 
