@@ -27,6 +27,8 @@ def run():
     sock.close()
 
 def paths_in_directory(directory):
+    if directory.endswith('/'):
+        directory = directory[:-1]
     for dirpath, dirnames, filenames in os.walk(directory):
         for filename in filenames:
             path = os.path.join(dirpath, filename)
