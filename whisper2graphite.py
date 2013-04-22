@@ -8,8 +8,8 @@ def run():
     info = get_info()
     sock = _socket_for_host_port(info.graphite_host, info.graphite_port)
     prefix = info.graphite_prefix
-    if prefix and not prefix.endswith('.'):
-        prefix += '.'
+    if prefix and prefix.endswith('.'):
+        prefix = prefix[:-1]
     for relative_path, full_path in paths_in_directory(info.whisper_path):
         if full_path.endswith('.wsp'):
             metric_path = relative_path.replace('/', '.')[:-4]
